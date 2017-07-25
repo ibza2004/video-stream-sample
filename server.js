@@ -14,6 +14,7 @@ app.get('/video', function(req, res) {
   const stat = fs.statSync(path)
   const fileSize = stat.size
   const range = req.headers.range
+  const head
 
   if (range) {
     const parts = range.replace(/bytes=/, "").split("-")
@@ -24,7 +25,7 @@ app.get('/video', function(req, res) {
 
     const chunksize = (end-start)+1
     const file = fs.createReadStream(path, {start, end})
-    const head = {
+    head = {
       'Content-Range': `bytes ${start}-${end}/${fileSize}`,
       'Accept-Ranges': 'bytes',
       'Content-Length': chunksize,
@@ -34,7 +35,7 @@ app.get('/video', function(req, res) {
     res.writeHead(206, head)
     file.pipe(res)
   } else {
-    const head = {
+     head = {
       'Content-Length': fileSize,
       'Content-Type': 'video/mp4',
     }
